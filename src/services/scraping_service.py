@@ -1,10 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
 from newspaper import Article, Config
+from sumy.summarizers.luhn import LuhnSummarizer as Summarizer
+from sumy.nlp.stemmers import Stemmer
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.utils import get_stop_words
+from sumy.parsers.plaintext import PlaintextParser
 import json
+# import nltk
+# nltk.download('punkt_tab')
 
 DEFIDIVE_API_URL = "https://api.defidive.com"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+LANGUAGE = "english"
+SENTENCES_COUNT = 10
 
 config = Config()
 config.browser_user_agent = USER_AGENT
@@ -23,7 +32,7 @@ def fetch_articles():
         return None
     
 
-def scrape_article(url):
+def scrape_article(url) -> dict:
     """Scrape article text using Newspaper3k and BeautifulSoup."""
     try:
         article = Article(url, config=config)
@@ -58,3 +67,12 @@ def scrape_with_bs(url, css_selector):
     except Exception as e:
         print(f"⚠️ BeautifulSoup Error: {e}")
         return None
+
+def summarize_article_text(article_text: str) -> str:
+    """Summarize article text using a simple heuristic."""
+    parser = PlaintextParser.from_string(article_text, Tokenizer(LANGUAGE))
+    stemmer = Stemmer(LANGUAGE)
+    summarizer = Summarizer(stemmer)
+    summarizer.stop_words = get_stop_words(LANGUAGE)
+    summarized_text = " ".join(str(sentence) for sentence in summarizer(parser.document, SENTENCES_COUNT))
+    return summarized_text.strip() if summarized_text else "No summary available."
