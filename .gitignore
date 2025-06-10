@@ -1,2 +1,4 @@
 /tgenv
 __pycache__/
+*.pyc
+.env

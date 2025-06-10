@@ -1,8 +1,6 @@
 from typing import List, Dict, Optional
 import json
 from openai import OpenAI
-# from anthropic import Anthropic
-# import cohere
 
 class CryptoNewsSummarizer:
     def __init__(self, llm_provider: str, llm_config: Dict, model_name: Optional[str] = None):
