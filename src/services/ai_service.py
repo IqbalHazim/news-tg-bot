@@ -1,6 +1,11 @@
 from typing import List, Dict, Optional
-import json
 from openai import OpenAI
+from logging.config import fileConfig
+import json
+import logging
+
+fileConfig('src/utils/logging_config.ini')
+logger = logging.getLogger(__name__)
 
 class CryptoNewsSummarizer:
     def __init__(self, llm_provider: str, llm_config: Dict, model_name: Optional[str] = None):
@@ -60,15 +65,19 @@ class CryptoNewsSummarizer:
         Returns:
             str: The formatted prompt with context.
         """
-        articles_info = "\n\n".join(
-            f"ARTICLE {i+1}:\n"
-            f"Source: {article.get('website_name', 'Unknown')}\n"
-            f"Title: {article.get('main_headline', 'No title')}\n"
-            f"Date: {article.get('written_datetime', 'Unknown date')}\n"
-            f"URL: {article.get('url', 'No URL')}\n"
-            f"Content:\n{article.get('content', 'No content')}"
-            for i, article in enumerate(self.context))
-        
+        try:
+            articles_info = "\n\n".join(
+                f"ARTICLE {i+1}:\n"
+                f"Source: {article.get('website_name', 'Unknown')}\n"
+                f"Title: {article.get('main_headline', 'No title')}\n"
+                f"Date: {article.get('written_datetime', 'Unknown date')}\n"
+                f"URL: {article.get('url', 'No URL')}\n"
+                f"Content:\n{article.get('content', 'No content')}"
+                for i, article in enumerate(self.context))
+        except Exception as e:
+            logger.error(f"⚠️ Error generating articles info: {e}")
+            articles_info = "No articles available for summarization."    
+
         prompt = f"""
         You are an expert AI assistant specialized in analyzing and summarizing cryptocurrency news.
         Your task is to carefully read through each provided news article and create a concise yet 
@@ -84,13 +93,17 @@ class CryptoNewsSummarizer:
         7. Group related information from different articles together in your summary.
         8. Include the source for each key point when relevant.
         9. If multiple articles cover the same event, provide a unified but detailed point.
-        
-        FORMAT REQUIREMENTS:
-        - Begin with an overall summary paragraph (2-3 sentences)
-        - Follow with bullet points of key information
-        - For each bullet point, include [Source X] reference when applicable
-        - End with potential market implications if discernible from the articles
-        
+        10. Ensure the detailed cryptocurrency news summary is in JSON format, suitable for Telegram and not too long (less than 4096 characters) .
+
+        Provide the cryptocurrency market update in JSON format, with the following structure:
+        - A "summary" field (string)
+        - A "key_points" field (object with subcategories like "institutional_adoption", "regulatory", etc.)
+        - Each subcategory should contain an array of bullet points (strings)
+        - Include a "market_implications" field (array of strings)
+        - DO NOT include Markdown symbols (like ### , /, /n or **) and ensure the JSON is valid and parsable by Telegram.
+        - Omit any newline characters in the JSON output.
+        - Ensure the JSON is formatted correctly without any syntax errors.
+
         ARTICLES TO SUMMARIZE:
         {articles_info}
         
@@ -145,6 +158,7 @@ class CryptoNewsSummarizer:
         else:
             raise ValueError(f"Unsupported LLM provider: {self.llm_provider}")
     
+    # Unused
     def summarize_to_file(self, file_path: str, **kwargs):
         """
         Generate a summary and save it to a file.
@@ -156,3 +170,4 @@ class CryptoNewsSummarizer:
         summary = self.summarize(**kwargs)
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(summary)
+

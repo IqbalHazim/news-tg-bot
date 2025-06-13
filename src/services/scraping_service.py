@@ -6,9 +6,14 @@ from sumy.nlp.stemmers import Stemmer
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.utils import get_stop_words
 from sumy.parsers.plaintext import PlaintextParser
-import json
+import logging
+from logging.config import fileConfig
+
 # import nltk
 # nltk.download('punkt_tab')
+
+fileConfig('src/utils/logging_config.ini')
+logger = logging.getLogger(__name__)
 
 class ScrapingService:
     def __init__(self, defidive_api_url: str, user_agent: str, language: str, sentences_count: int):
@@ -27,7 +32,7 @@ class ScrapingService:
             data = response.json()
             return data
         except requests.exceptions.RequestException as e:
-            print(f"⚠️ Request Error: {e}")
+            logger.error(f"⚠️ Request Error: {e}")
             return None
         
 
@@ -51,7 +56,7 @@ class ScrapingService:
                 "summary": article.summary
             }
         except Exception as e:
-            print(f"⚠️ Newspaper3k Error: {e}")
+            logger.debug(f"⚠️ Newspaper3k Error: {e}")
             raise e
         
     def scrape_with_bs(self, url, css_selector):
@@ -67,14 +72,18 @@ class ScrapingService:
             # Extract text from all selected elements
             return " ".join([elem.get_text(strip=True) for elem in selected_content])
         except Exception as e:
-            print(f"⚠️ BeautifulSoup Error: {e}")
+            logger.debug(f"⚠️ BeautifulSoup Error: {e}")
             return None
 
     def summarize_article_text(self, article_text: str) -> str:
         """Summarize article text using a simple heuristic."""
-        parser = PlaintextParser.from_string(article_text, Tokenizer(self.language))
-        stemmer = Stemmer(self.language)
-        summarizer = Summarizer(stemmer)
-        summarizer.stop_words = get_stop_words(self.language)
-        summarized_text = " ".join(str(sentence) for sentence in summarizer(parser.document, self.sentences_count))
-        return summarized_text.strip() if summarized_text else "No summary available."
+        try:
+            parser = PlaintextParser.from_string(article_text, Tokenizer(self.language))
+            stemmer = Stemmer(self.language)
+            summarizer = Summarizer(stemmer)
+            summarizer.stop_words = get_stop_words(self.language)
+            summarized_text = " ".join(str(sentence) for sentence in summarizer(parser.document, self.sentences_count))
+            return summarized_text.strip() if summarized_text else "No summary available."
+        except Exception as e:
+            logger.debug(f"⚠️ Summarization Error: {e}")
+            raise e
