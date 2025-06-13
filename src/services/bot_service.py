@@ -1,6 +1,6 @@
 from services.ai_service import CryptoNewsSummarizer
 from services.scraping_service import ScrapingService
-from config import TELEGRAM_BOT_TOKEN
+from config import TELEGRAM_BOT_TOKEN, CHANNEL_ID
 import logging
 from logging.config import fileConfig
 import requests
@@ -8,8 +8,6 @@ import requests
 # Initialize logging
 fileConfig('src/utils/logging_config.ini')
 logger = logging.getLogger(__name__)
-
-CHANNEL_NAME = "-1002693030094" # os.getenv('CHAT_ID')
 
 class BotService:
     def __init__(self, scraping_service: ScrapingService, ai_service: CryptoNewsSummarizer):
@@ -112,7 +110,7 @@ class BotService:
         """Send message to Telegram channel"""
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
         payload = {
-            "chat_id": CHANNEL_NAME,
+            "chat_id": CHANNEL_ID,
             "text": text,
             "parse_mode": "MarkdownV2"  # For formatting
         }

@@ -24,6 +24,12 @@ if TELEGRAM_BOT_TOKEN:
     logger.info(f"✓ BOT_TOKEN loaded")
 else:
     logger.error("⚠️ Warning: DEEPSEEK_API_KEY not set. AI summary will be disabled.")
+
+CHANNEL_ID = os.getenv('CHANNEL_ID')
+if not CHANNEL_ID:
+    raise ValueError("CHANNEL_ID required in .env file")
+else:
+    logger.info(f"✓ CHANNEL_ID loaded")
     
 # Optional but recommended for synopsis generation
 DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
