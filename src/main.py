@@ -1,41 +1,23 @@
-import json
 import logging
+from apscheduler.schedulers.background import BackgroundScheduler
 from logging.config import fileConfig
-from services.scraping_service import  ScrapingService
-from services.ai_service import CryptoNewsSummarizer
-from services.bot_service import BotService
-
-from config import DEEPSEEK_API_KEY, DEFIDIVE_API_URL, USER_AGENT, LANGUAGE, SENTENCES_COUNT
+from scheduler import schedule_summary
 
 fileConfig('src/utils/logging_config.ini')
 logger = logging.getLogger(__name__)
-    
+
+
 if __name__ == "__main__":
-    llm_config = {
-        "api_key": DEEPSEEK_API_KEY,
-    }
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(schedule_summary, 'interval', hours=6)
+    scheduler.start()
 
-    scraper = ScrapingService(
-        defidive_api_url=DEFIDIVE_API_URL,
-        user_agent=USER_AGENT,
-        language=LANGUAGE,
-        sentences_count=SENTENCES_COUNT
-    )
-
-    # Initialize the summarizer with OpenAI
-    summarizer = CryptoNewsSummarizer(
-        llm_provider="openai",
-        llm_config=llm_config,
-        model_name="deepseek-chat"
-    )
-
-    bot = BotService(scraping_service=scraper, ai_service=summarizer)
-    logger.info("Starting the scraping and summarization process...")
-    summary = bot.start_summarization()
-    logger.info("Summary generated successfully!")
-
-    # for debugging
-    # print(json.dumps(summary, indent=2, ensure_ascii=False))
-
-    cleaned_summary_json = summary.replace("/ ", "").replace("/n ", "").strip()
-    bot.send_to_channel(cleaned_summary_json)
+    logger.info("Scheduler started. Waiting for jobs to run...")
+    
+    try:
+        # Keep the script running to allow the scheduler to run jobs
+        while True:
+            pass
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
+        logger.info("Scheduler stopped.")
