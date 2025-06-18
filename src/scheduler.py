@@ -11,6 +11,7 @@ fileConfig('src/utils/logging_config.ini')
 logger = logging.getLogger(__name__)
 
 def schedule_summary():
+    logger.info("Scheduler job STARTED")
     llm_config = {
         "api_key": DEEPSEEK_API_KEY,
     }
@@ -31,11 +32,12 @@ def schedule_summary():
 
     bot = BotService(scraping_service=scraper, ai_service=summarizer)
     logger.info("Starting the scraping and summarization process...")
-    summary = bot.start_summarization()
-    logger.info("Summary generated successfully!")
 
-    # for debugging
-    # print(json.dumps(summary, indent=2, ensure_ascii=False))
-    
-    cleaned_summary_json = summary.replace("/ ", "").replace("/n ", "").strip()
-    bot.send_to_channel(cleaned_summary_json)
+    try:
+        summary = bot.start_summarization()
+        logger.info("Summary generated successfully!")
+        
+        cleaned_summary_json = summary.replace("/ ", "").replace("/n ", "").strip()
+        bot.send_to_channel(cleaned_summary_json)
+    except Exception as e:
+        logger.error(f"Failed to send summary: {str(e)}", exc_info=True)
