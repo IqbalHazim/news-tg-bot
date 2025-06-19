@@ -2,11 +2,12 @@ import logging
 from apscheduler.schedulers.background import BackgroundScheduler
 # from apscheduler.schedulers.blocking import BlockingScheduler
 from logging.config import fileConfig
-from scheduler import schedule_summary
+
 
 fileConfig('src/utils/logging_config.ini')
 logger = logging.getLogger(__name__)
 
+from scheduler import schedule_summary
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()

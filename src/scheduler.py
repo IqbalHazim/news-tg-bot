@@ -1,13 +1,11 @@
 import logging
 from apscheduler.schedulers.background import BackgroundScheduler
-from logging.config import fileConfig
 from services.scraping_service import  ScrapingService
 from services.ai_service import CryptoNewsSummarizer
 from services.bot_service import BotService
 
 from config import DEEPSEEK_API_KEY, DEFIDIVE_API_URL, USER_AGENT, LANGUAGE, SENTENCES_COUNT
 
-fileConfig('src/utils/logging_config.ini')
 logger = logging.getLogger(__name__)
 
 def schedule_summary():
