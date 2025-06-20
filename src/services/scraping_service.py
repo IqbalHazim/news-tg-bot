@@ -9,8 +9,8 @@ from sumy.parsers.plaintext import PlaintextParser
 import logging
 from logging.config import fileConfig
 
-# import nltk
-# nltk.download('punkt_tab')
+import nltk
+nltk.download('punkt_tab')
 
 fileConfig('src/utils/logging_config.ini')
 logger = logging.getLogger(__name__)
