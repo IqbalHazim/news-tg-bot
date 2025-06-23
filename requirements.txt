@@ -1,7 +1,7 @@
 annotated-types==0.7.0
 anyio==4.5.2
 APScheduler==3.11.0
-backports.zoneinfo==0.2.1;python_version<"3.9"
+backports.zoneinfo==0.2.1
 beautifulsoup4==4.13.4
 breadability==0.1.20
 bs4==0.0.2
@@ -29,13 +29,16 @@ lxml==5.4.0
 lxml_html_clean==0.4.2
 newspaper3k==0.2.8
 nltk==3.9.1
+numpy==1.24.4
 openai==1.82.0
+pandas==2.0.3
 pillow==10.4.0
 pycountry==24.6.1
 pydantic==2.10.6
 pydantic_core==2.27.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
+pytz==2025.2
 PyYAML==6.0.2
 regex==2024.11.6
 requests==2.32.3
@@ -49,6 +52,7 @@ tinysegmenter==0.3
 tldextract==5.1.2
 tqdm==4.67.1
 typing_extensions==4.13.2
+tzdata==2025.2
 tzlocal==5.2
 urllib3==2.2.3
 zipp==3.20.2
