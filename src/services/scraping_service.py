@@ -7,12 +7,10 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.utils import get_stop_words
 from sumy.parsers.plaintext import PlaintextParser
 import logging
-from logging.config import fileConfig
 
 import nltk
 nltk.download('punkt_tab')
 
-fileConfig('src/utils/logging_config.ini')
 logger = logging.getLogger(__name__)
 
 class ScrapingService:

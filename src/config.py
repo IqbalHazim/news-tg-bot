@@ -1,9 +1,7 @@
 import os
 import logging
-from logging.config import fileConfig
 from dotenv import load_dotenv, find_dotenv
 
-fileConfig('src/utils/logging_config.ini')
 logger = logging.getLogger(__name__)
 
 # Load environment
