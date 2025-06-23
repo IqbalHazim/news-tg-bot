@@ -23,10 +23,18 @@ class PriceService:
             # TODO: Add more robust error handling and data validation
             # TODO: determine if time is using unix timestamp or datetime
             prepared_data = pd.DataFrame(data)
+
+            # Convert timestamp to datetime and set as index
+            prepared_data['time'] = pd.to_datetime(prepared_data['time'], unit='ms')
+            prepared_data.set_index('time', inplace=True)
+
+            # Handle missing values - backfill then forward fill as fallback
+            prepared_data['price'] = prepared_data['price'].fillna(method='bfill').fillna(method='ffill')
+            return prepared_data
         except Exception as e:
             logger.error(f"⚠️ Error preparing price data: {e}")
             return []
-        return prepared_data
+        
     
     def get_price(self, token: str, timeframe: str = "1w"):
         """
