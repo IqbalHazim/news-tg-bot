@@ -87,3 +87,7 @@ class ScrapingService:
         except Exception as e:
             logger.debug(f"⚠️ Summarization Error: {e}")
             raise e
+        
+    def clean_text(self, text: str) -> str:
+        """Clean text by removing unwanted characters."""
+        return text.replace("/ ", "").replace("/n ", "").strip()
