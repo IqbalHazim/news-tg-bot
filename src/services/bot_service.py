@@ -43,6 +43,8 @@ class BotService:
                 "content": self.scraping_service.summarize_article_text(scraped_article.get('text', '')),
                 }
             
+            # print("\n=== Newspaper3k Output ===")
+            # print(json.dumps(article_data, indent=2))
             articles.append(article_data)
         return articles
 
